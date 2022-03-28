@@ -7,12 +7,57 @@
 #include <stdlib.h>
 #include <iostream>
 #include <algorithm>
+
 using namespace std;
+
+void Helper(int* digitsNew, int desiredNumber, char* operations, int temp1, int count, bool& isFound) {
+	
+	if (count == 6)
+	{
+		return;
+	}
+	for (int j = 0; j < 4; ++j)
+	{
+		int temp2;
+		if (operations[j] == '+')
+		{
+			temp2 = temp1 + digitsNew[count];
+		}
+		else if (operations[j] == '-')
+		{
+			temp2 = temp1 - digitsNew[count];
+		}
+		else if (operations[j] == '*')
+		{
+			temp2 = temp1 * digitsNew[count];
+		}
+		else
+		{
+			temp2 = temp1 / digitsNew[count];
+		}
+		if (temp2 == desiredNumber) 
+		{
+			cout << temp1 << " " << operations[j] << " " << digitsNew[count] << endl;
+			isFound = true;
+			return;
+		}
+		else
+		{
+			if (isFound) 
+			{
+				cout << temp1 << " " << operations[j-1] << " " << digitsNew[count] << endl;
+				return;
+			}
+			Helper(digitsNew, desiredNumber, operations, temp2, count + 1, isFound);
+			
+		}
+	}
+}
 
 
 
 void FindCalculation(int* digits, int quarter, int desiredNumber) {
-	string operations[4] = { "+", "-", "*", "/" }; //all operations
+	char operations[4] = { '+', '-', '*', '/' }; //all operations
 	int mergedNumbers[6]; //digits + quarter
 	int digitsNew[6]; //used for each permutation
 
@@ -32,7 +77,8 @@ void FindCalculation(int* digits, int quarter, int desiredNumber) {
 	mergedNumbers[5] = quarter;
 
 	//saving all permutations
-	do {
+	do 
+	{
 		for (int i = 0; i < 6; ++i)
 		{
 			permutations[index][i] = mergedNumbers[i];
@@ -40,6 +86,7 @@ void FindCalculation(int* digits, int quarter, int desiredNumber) {
 		index++;
 	} while (next_permutation(mergedNumbers, mergedNumbers + 6));
 	
+	bool isFound = false;
 	//for each permutation, calculate if there is a valid result
 	for (int x = 0; x < 720; ++x) {
 
@@ -49,173 +96,19 @@ void FindCalculation(int* digits, int quarter, int desiredNumber) {
 			digitsNew[c] = permutations[x][c];
 		}
 
-		for (int i = 0; i < 4; ++i)
+		//recursive helper function
+		Helper(digitsNew, desiredNumber, operations, digitsNew[0], 1, isFound);
+		if (isFound) 
 		{
-			int temp1;
-			if (operations[i] == "+")
+			//freeing permutation array memory
+			for (int p = 0; p < 720; ++p)
 			{
-				temp1 = digitsNew[0] + digitsNew[1];
+				delete[] permutations[p];
 			}
-			else if (operations[i] == "-")
-			{
-				temp1 = digitsNew[0] - digitsNew[1];
-			}
-			else if (operations[i] == "*")
-			{
-				temp1 = digitsNew[0] * digitsNew[1];
-			}
-			else
-			{
-				temp1 = digitsNew[0] / digitsNew[1];
-			}
-
-			if (temp1 == desiredNumber) {
-				cout << digitsNew[0] << operations[i] << digitsNew[1];
-
-				//freeing permutation array memory
-				for (int p = 0; p < 720; ++p)
-				{
-					delete[] permutations[p];
-				}
-				delete[] permutations;
-
-				return;
-			}
-			for (int j = 0; j < 4; ++j)
-			{
-				int temp2;
-				if (operations[j] == "+")
-				{
-					temp2 = temp1 + digitsNew[2];
-				}
-				else if (operations[j] == "-")
-				{
-					temp2 = temp1 - digitsNew[2];
-				}
-				else if (operations[j] == "*")
-				{
-					temp2 = temp1 * digitsNew[2];
-				}
-				else
-				{
-					temp2 = temp1 / digitsNew[2];
-				}
-				if (temp2 == desiredNumber) {
-					cout << digitsNew[0] << operations[i] << digitsNew[1] << operations[j] << digitsNew[2];
-
-					//freeing permutation array memory
-					for (int p = 0; p < 720; ++p)
-					{
-						delete[] permutations[p];
-					}
-					delete[] permutations;
-
-					return;
-				}
-				for (int k = 0; k < 4; ++k)
-				{
-					int temp3;
-					if (operations[k] == "+")
-					{
-						temp3 = temp2 + digitsNew[3];
-					}
-					else if (operations[k] == "-")
-					{
-						temp3 = temp2 - digitsNew[3];
-					}
-					else if (operations[k] == "*")
-					{
-						temp3 = temp2 * digitsNew[3];
-					}
-					else
-					{
-						temp3 = temp2 / digitsNew[3];
-					}
-					if (temp3 == desiredNumber) {
-						cout << digitsNew[0] << operations[i] << digitsNew[1] << operations[j] << digitsNew[2] << operations[k]
-							<< digitsNew[3];
-
-						//freeing permutation array memory
-						for (int p = 0; p < 720; ++p)
-						{
-							delete[] permutations[p];
-						}
-						delete[] permutations;
-
-						return;
-					}
-					for (int a = 0; a < 4; ++a)
-					{
-						int temp4;
-						if (operations[a] == "+")
-						{
-							temp4 = temp3 + digitsNew[4];
-						}
-						else if (operations[a] == "-")
-						{
-							temp4 = temp3 - digitsNew[4];
-						}
-						else if (operations[a] == "*")
-						{
-							temp4 = temp3 * digitsNew[4];
-						}
-						else
-						{
-							temp4 = temp3 / digitsNew[4];
-						}
-						if (temp4 == desiredNumber) {
-							cout << digitsNew[0] << operations[i] << digitsNew[1] << operations[j] << digitsNew[2] << operations[k]
-								<< digitsNew[3] << operations[a] << digitsNew[4];
-
-							//freeing permutation array memory
-							for (int p = 0; p < 720; ++p)
-							{
-								delete[] permutations[p];
-							}
-							delete[] permutations;
-
-							return;
-						}
-						for (int b = 0; b < 4; ++b)
-						{
-							int temp5;
-							if (operations[b] == "+")
-							{
-								temp5 = temp4 + digitsNew[5];
-							}
-							else if (operations[b] == "-")
-							{
-								temp5 = temp4 - digitsNew[5];
-							}
-							else if (operations[b] == "*")
-							{
-								temp5 = temp4 * digitsNew[5];
-							}
-							else
-							{
-								temp5 = temp4 / digitsNew[5];
-							}
-							if (temp5 == desiredNumber) {
-								cout << digitsNew[0] << operations[i] << digitsNew[1] << operations[j] << digitsNew[2] << operations[k]
-									<< digitsNew[3] << operations[a] << digitsNew[4] << operations[b] << digitsNew[5];
-
-								//freeing permutation array memory
-								for (int p = 0; p < 720; ++p)
-								{
-									delete[] permutations[p];
-								}
-								delete[] permutations;
-
-								return;
-							}
-						}
-					}
-				}
-
-			}
+			delete[] permutations;
+			return;
 		}
 	}
-
 	//freeing permutation array memory
 	for (int p = 0; p < 720; ++p)
 	{

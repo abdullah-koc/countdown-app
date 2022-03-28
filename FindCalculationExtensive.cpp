@@ -10,7 +10,8 @@
 
 using namespace std;
 
-void Helper(int* digitsNew, int desiredNumber, char* operations, int temp1, int count, bool& isFound) {
+void Helper(int* digitsNew, int desiredNumber, char* operations, int temp1, int count, bool& isFound)
+{
 	
 	if (count == 6)
 	{
